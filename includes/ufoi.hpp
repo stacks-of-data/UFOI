@@ -1,53 +1,58 @@
+#ifndef UFOI_HPP
+#define UFOI_HPP
+
 #include <cstdint>
 #include <vector>
 
-typedef enum EUFOITextureType
+namespace UFOI
 {
-    UFOI_TEX_AMBIENT,
-    UFOI_TEX_DIFFUSE,
-    UFOI_TEX_SPECULAR,
-    UFOI_TEX_SHININESS,
-    UFOI_TEX_ALPHA,
-    UFOI_TEX_BUMP,
-    UFOI_TEX_DISPLACMENT
-} UFOITextureType;
+    typedef enum ETextureType
+    {
+        UFOI_TEX_AMBIENT,
+        UFOI_TEX_DIFFUSE,
+        UFOI_TEX_SPECULAR,
+        UFOI_TEX_SHININESS,
+        UFOI_TEX_ALPHA,
+        UFOI_TEX_BUMP,
+        UFOI_TEX_DISPLACMENT
+    } TextureType;
 
-typedef struct SUFOITexture
-{
-    UFOITextureType type;
-    char* path;
-} UFOITexture;
+    typedef struct STexture
+    {
+        UFOI::TextureType type;
+        char* path;
+    } Texture;
 
-typedef struct SUFOIMaterial
-{
-    char* name;
-    float ambient[3];
-    float diffuse[3];
-    float specular[3];
-    float transparency;
-    float transparency_filter[3];
-    float optical_density;
-    std::vector<UFOITexture*> textures;
-} UFOIMaterial;
+    typedef struct SMaterial
+    {
+        char* name;
+        float ambient[3];
+        float diffuse[3];
+        float specular[3];
+        float transparency_filter[3];
+        float transparency;
+        float optical_density;
+        std::vector<UFOI::Texture*> textures;
+    } Material;
 
-typedef struct SUFOIPart
-{
-    std::size_t indices_len;
-    std::uint32_t* indices;
-    UFOIMaterial* material;
-} UFOIPart;
+    typedef struct SPart
+    {
+        std::vector<std::uint32_t> indices;
+        UFOI::Material* material;
+    } Part;
 
-typedef struct SUFOIMesh
-{
-    char* mesh_name;
-    std::vector<UFOIPart*> parts;
-} UFOIMesh;
+    typedef struct SMesh
+    {
+        char* mesh_name;
+        std::vector<UFOI::Part*> parts;
+    } Mesh;
 
-typedef struct SUFOIModel
-{
-    char* model_name;
-    std::vector<UFOIMesh*> meshes;
-} UFOIModel;
+    typedef struct SModel
+    {
+        char* model_name;
+        std::vector<UFOI::Mesh*> meshes;
+    } Model;
+}
 
 class UFOIScene
 {
@@ -55,9 +60,11 @@ class UFOIScene
         std::vector<float> verts;
         std::vector<float> norms;
         std::vector<float> texcoords;
-        std::vector<UFOIModel*> models;
-        std::vector<UFOIMaterial*> materials;
-        std::vector<UFOITexture*> textures;
+        std::vector<UFOI::Model*> models;
+        std::vector<UFOI::Material*> materials;
+        std::vector<UFOI::Texture*> textures;
         UFOIScene();
         ~UFOIScene();
 };
+
+#endif
