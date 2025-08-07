@@ -3,6 +3,10 @@
 
 #include <cstdint>
 #include <vector>
+#include <list>
+#include <unordered_map>
+#include <string>
+#include <exception>
 
 namespace UFOI
 {
@@ -52,6 +56,36 @@ namespace UFOI
         char* model_name;
         std::vector<UFOI::Mesh*> meshes;
     } Model;
+
+    class AccessError: public std::exception
+    {
+        const char* what() const noexcept;
+    };
+
+    class FileNotFound: public std::exception
+    {
+        const char* what() const noexcept;
+    };
+
+    class ReadAccessDenied: public std::exception
+    {
+        const char* what() const noexcept;
+    };
+
+    class OpenFileError: public std::exception
+    {
+        const char* what() const noexcept;
+    };
+
+    class FileStatError: public std::exception
+    {
+        const char* what() const noexcept;
+    };
+
+    class MemoryMapError: public std::exception
+    {
+        const char* what() const noexcept;
+    };
 }
 
 class UFOIScene
@@ -65,6 +99,34 @@ class UFOIScene
         std::vector<UFOI::Texture*> textures;
         UFOIScene();
         ~UFOIScene();
+};
+
+class UFOIParser
+{
+    private:
+        bool _bLogging;
+        const std::string* _path;
+        __off_t _map_size;
+        size_t _page_size;
+        size_t _line;
+        UFOIScene* _scene;
+        char* _map_addr;
+        char* _map_end;
+        std::list<UFOI::Model*> _list_models;
+        std::unordered_map<std::string, UFOI::Material*> _materials;
+        std::unordered_map<std::string, UFOI::Texture*> _textures;
+        std::list<float*> _verts_pages;
+        std::list<float*> _norms_pages;
+        std::list<float*> _texcoords_pages;
+        void parseMapFile();
+        void parseProcessData();
+        void cleanParser();
+        bool tokenCmp(char* map_ptr, char* token);
+    public:
+        UFOIParser();
+        UFOIParser(bool bLogging, size_t page_size);
+        ~UFOIParser();
+        UFOIScene* parse(const std::string& path);
 };
 
 #endif
